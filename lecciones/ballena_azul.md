@@ -6,15 +6,15 @@ paginate: false
 style: |
   section {
     font-family: 'Arial', sans-serif;
-    padding: 50px;
+    padding: 60px;
     font-size: 26px;
     display: block;
   }
   h1 { color: #1a73e8; border-bottom: 4px solid #1a73e8; }
   h3 { color: #444; background: #f0f4f8; padding: 10px; border-radius: 5px; margin-top: 30px; }
   .hr-cut { border-top: 2px dashed #bbb; margin: 40px 0; }
-  .tutor-section { background-color: #fffaf0; padding: 20px; border-radius: 10px; }
-  .qr-container { text-align: center; margin-top: 20px; }
+  .tutor-area { background-color: #fffaf0; border-radius: 15px; padding: 10px; }
+  .qr-center { text-align: center; margin-top: 20px; }
 ---
 
 # 🐳 LA BALLENA AZUL
@@ -27,23 +27,22 @@ Este mamífero brillante no tiene dientes, sino barbas para filtrar su alimento.
 
 <div class="hr-cut"></div>
 
-<div class="tutor-section">
+<div class="tutor-area">
 
 ## 📋 GUÍA DEL TUTOR
 
 ### 3. DICTADO (15-20 PPM)
-"Las crías de ballena son preciosas y crecen muy rápido. Debemos cuidar nuestro preciado océano con gratitud."
+*"Las crías de ballena son preciosas y crecen muy rápido. Debemos cuidar nuestro preciado océano con gratitud."*
 
 ### 4. EVALUACIÓN
 1. ¿A qué se compara el peso de la lengua?
 2. ¿Qué efecto hace el agua bajo el sol?
 
-<div class="qr-container">
-  <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https%3A%2F%2Fdocs.google.com%2Fforms%2Fd%2Fe%2F1FAIpQLSdZ2hUNKxJgGdhQHp_vAWxFBZDvCs3I_-nQPns64qez_79_Iw%2Fviewform%3Fusp%3Dpp_url%26entry.1913143287%3DBallena_Azul" 
-       width="180" 
-       height="180">
-  <br>
-  <small>Escanea para registrar PPM</small>
+<div class="qr-center">
+
+<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https%3A%2F%2Fdocs.google.com%2Fforms%2Fd%2Fe%2F1FAIpQLSdZ2hUNKxJgGdhQHp_vAWxFBZDvCs3I_-nQPns64qez_79_Iw%2Fviewform%3Fusp%3Dpp_url%26entry.1913143287%3DBallena_Azul" width="180" height="180">
+
+**Escanea para registrar PPM**
 </div>
 
 </div>
