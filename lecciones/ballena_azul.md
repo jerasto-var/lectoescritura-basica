@@ -35,6 +35,7 @@ Este mamífero brillante no tiene dientes, sino barbas para filtrar su alimento.
 1. ¿A qué se compara el peso de la lengua?
 2. ¿Qué lanza la ballena al respirar?
 3. ¿Por qué debemos cuidar nuestros océanos?
+
 <div class="footer-qr">
   <div>
     <strong>Instrucciones para Papá/Mamá:</strong><br>
