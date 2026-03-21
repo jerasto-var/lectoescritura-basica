@@ -42,5 +42,19 @@ Este mamífero brillante no tiene dientes, sino barbas para filtrar su alimento.
     2. Registra los PPM obtenidos.<br>
     3. ¡Felicita al Cadete por su esfuerzo!
   </div>
-  ![QR](https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://docs.google.com/forms/d/e/1FAIpQLSdZ2hUNKxJgGdhQHp_vAWxFBZDvCs3I_-nQPns64qez_79_Iw/viewform?usp=pp_url&entry.1913143287=Ballena_Azul)
+
+<div class="footer-qr">
+  <div>
+    <strong>Instrucciones:</strong><br>
+    1. Escanea al terminar.<br>
+    2. Registra los PPM.
+  </div>
+  
+  <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://docs.google.com/forms/d/e/1FAIpQLSdZ2hUNKxJgGdhQHp_vAWxFBZDvCs3I_-nQPns64qez_79_Iw/viewform?usp=pp_url&entry.1913143287=Ballena_Azul" 
+       width="150" 
+       height="150" 
+       alt="QR de Registro">
+</div>
+
+
 </div>
