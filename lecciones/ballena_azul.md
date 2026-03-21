@@ -1,19 +1,10 @@
 ---
 marp: true
 theme: default
-size: 9:16
+size: 1080x1920
 paginate: false
 style: |
-  section {
-    font-family: 'Arial', sans-serif;
-    padding: 60px;
-    font-size: 26px;
-    display: block;
-  }
-  h1 { color: #1a73e8; border-bottom: 4px solid #1a73e8; }
-  h3 { color: #444; background: #f0f4f8; padding: 10px; border-radius: 5px; margin-top: 30px; }
   .hr-cut { border-top: 2px dashed #bbb; margin: 40px 0; }
-  .tutor-area { background-color: #fffaf0; border-radius: 15px; padding: 10px; }
   .qr-center { text-align: center; margin-top: 20px; }
 ---
 
@@ -26,8 +17,6 @@ La **ballena azul** es el animal más grande del planeta. Es tan increíble que 
 Este mamífero brillante no tiene dientes, sino barbas para filtrar su alimento. Lanza un chorro de agua que parece **cristal** bajo el sol.
 
 <div class="hr-cut"></div>
-
-<div class="tutor-area">
 
 ## 📋 GUÍA DEL TUTOR
 
@@ -44,6 +33,3 @@ Este mamífero brillante no tiene dientes, sino barbas para filtrar su alimento.
 
 **Escanea para registrar PPM**
 </div>
-
-</div>
-```
