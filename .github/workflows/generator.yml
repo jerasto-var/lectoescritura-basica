@@ -1,0 +1,43 @@
+name: Generador de Lecciones y PDF
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'lecciones/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v3
+
+      - name: Instalar Marp CLI
+        run: npm install -g @marp-team/marp-cli
+
+      - name: Crear carpeta de salida
+        run: mkdir -p output
+
+      - name: Convertir Markdown a PDF
+        run: |
+          for f in lecciones/*.md; do
+            marp "$f" --pdf --allow-local-files -o "output/$(basename "$f" .md).pdf"
+          done
+
+      - name: Generar Índice HTML Automático
+        run: |
+          echo "<html><head><title>Mis Lecciones</title><style>body{font-family:sans-serif;padding:20px;} li{margin:10px 0;}</style></head><body>" > output/index.html
+          echo "<h1>Catálogo de Lecciones</h1><ul>" >> output/index.html
+          for f in output/*.pdf; do
+            filename=$(basename "$f")
+            echo "<li><a href='./$filename' target='_blank'>$filename</a></li>" >> output/index.html
+          done
+          echo "</ul></body></html>" >> output/index.html
+
+      - name: Desplegar a GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: output
+          branch: gh-pages
