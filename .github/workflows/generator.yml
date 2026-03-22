@@ -1,9 +1,11 @@
-name: Generador de Lecciones y PDF
+name: Generador de Lecciones y Dashboard
 on:
   push:
     branches: [ main ]
+    # Se activa si cambias lecciones o el diseño del dashboard
     paths:
       - 'lecciones/**'
+      - 'dashboard_template.html'
 
 jobs:
   build:
@@ -26,15 +28,42 @@ jobs:
             marp "$f" --pdf --allow-local-files -o "output/$(basename "$f" .md).pdf"
           done
 
-      - name: Generar Índice HTML Automático
+      - name: Generar Diccionario de Palabras y Dashboard
         run: |
-          echo "<html><head><title>Mis Lecciones</title><style>body{font-family:sans-serif;padding:20px;} li{margin:10px 0;}</style></head><body>" > output/index.html
-          echo "<h1>Catálogo de Lecciones</h1><ul>" >> output/index.html
-          for f in output/*.pdf; do
-            filename=$(basename "$f")
-            echo "<li><a href='./$filename' target='_blank'>$filename</a></li>" >> output/index.html
+          # 1. Iniciar el archivo de datos para el Dashboard
+          echo "const leccionesData = {" > output/words.js
+          
+          for f in lecciones/*.md; do
+            # Nombre limpio para coincidir con el QR (ej: Ballena_Azul)
+            name=$(basename "$f" .md)
+            
+            # Conteo de palabras por sección usando awk
+            copiado=$(awk '/### 1. COPIADO/{f=1;next}/### 2. LECTURA/{f=0}f' "$f" | wc -w)
+            lectura=$(awk '/### 2. LECTURA/{f=1;next}/---/{f=0}f' "$f" | wc -w)
+            dictado=$(awk '/### 3. DICTADO/{f=1;next}/### 4. EVALUACIÓN/{f=0}f' "$f" | wc -w)
+            
+            echo "  \"$name\": { \"Copiado\": $copiado, \"Lectura\": $lectura, \"Dictado\": $dictado }," >> output/words.js
           done
-          echo "</ul></body></html>" >> output/index.html
+          
+          echo "};" >> output/words.js
+
+          # 2. Preparar el index.html basado en tu template
+          # Si el template existe, lo usamos como base
+          if [ -f "dashboard_template.html" ]; then
+            cp dashboard_template.html output/index.html
+            
+            # Añadimos al final del index una lista de los PDFs generados para descarga rápida
+            echo "<div style='max-width:800px; margin:20px auto; font-family:sans-serif; padding:20px; border-top:1px dashed #ccc;'>" >> output/index.html
+            echo "<h3>📂 Descargar PDFs de Lecciones</h3><ul>" >> output/index.html
+            for pdf in output/*.pdf; do
+              filename=$(basename "$pdf")
+              echo "<li><a href='./$filename' target='_blank'>$filename</a></li>" >> output/index.html
+            done
+            echo "</ul></div>" >> output/index.html
+          else
+            echo "Error: dashboard_template.html no encontrado en la raíz."
+            exit 1
+          fi
 
       - name: Desplegar a GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
