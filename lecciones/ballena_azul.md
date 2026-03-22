@@ -36,7 +36,7 @@ Este mamífero brillante no tiene dientes, sino **barbas** para filtrar su alime
 
 <div class="qr-side">
 
-<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https%3A%2F%2Fdocs.google.com%2Fforms%2Fd%2Fe%2F1FAIpQLSdZ2hUNKxJgGdhQHp_vAWxFBZDvCs3I_-nQPns64qez_79_Iw%2Fviewform%3Fusp%3Dpp_url%26entry.1913143287%3DBallena_Azul" width="150" height="150">
+<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https%3A%2F%2Fdocs.google.com%2Fforms%2Fd%2Fe%2F1FAIpQLSdZ2hUNKxJgGdhQHp_vAWxFBZDvCs3I_-nQPns64qez_79_Iw%2Fviewform%3Fusp%3Dpp_url%26entry.1913143287%3Dballena_azul" width="150" height="150">
 
 **REGISTRAR PPM**
 </div>
