@@ -3,15 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <title>Panel de Control - Entrenamiento de Lectura</title>
-    <script src="[https://cdn.jsdelivr.net/npm/chart.js](https://cdn.jsdelivr.net/npm/chart.js)"></script>
-    <script src="[https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js](https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js)"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    
+    <script src="words.js"></script>
+
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; text-align: center; }
-        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        h1 { color: #1a73e8; }
-        .stats-grid { display: flex; justify-content: space-around; margin-bottom: 20px; }
-        .stat-card { background: #e8f0fe; padding: 15px; border-radius: 10px; width: 30%; }
-        .stat-value { font-size: 24px; font-weight: bold; color: #1967d2; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; text-align: center; padding: 20px; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h1 { color: #1a73e8; margin-bottom: 30px; }
+        .stats-grid { display: flex; justify-content: space-around; margin-bottom: 30px; }
+        .stat-card { background: #e8f0fe; padding: 20px; border-radius: 12px; width: 45%; border: 1px solid #c2d7ff; }
+        .stat-label { font-size: 14px; color: #5f6368; text-transform: uppercase; letter-spacing: 1px; }
+        .stat-value { font-size: 32px; font-weight: bold; color: #1967d2; margin-top: 5px; }
+        canvas { background: #fff; border-radius: 8px; padding: 10px; }
     </style>
 </head>
 <body>
@@ -20,92 +25,112 @@
         
         <div class="stats-grid">
             <div class="stat-card">
-                <div>Mejor Récord</div>
+                <div class="stat-label">Mejor Récord</div>
                 <div id="max-ppm" class="stat-value">0</div>
-                <div>PPM</div>
+                <div class="stat-label">PPM</div>
             </div>
             <div class="stat-card">
-                <div>Lecciones</div>
+                <div class="stat-label">Lecciones</div>
                 <div id="total-lecciones" class="stat-value">0</div>
-                <div>Completadas</div>
+                <div class="stat-label">Completadas</div>
             </div>
         </div>
 
-        <canvas id="progresoChart"></canvas>
+        <canvas id="progresoChart" width="400" height="200"></canvas>
     </div>
 
     <script>
-        // REEMPLAZA ESTA URL CON TU URL DE GOOGLE SHEET (CSV)
         const public_spreadsheet_url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSPbpiuL-TNp1FOm6n8BoeQcEKTyCMcvsugt1K2t2sUtaAnjY83A7ZuunEbRRyhp0GtiqqSHJQDLNNX/pub?gid=407824740&single=true&output=csv';
 
         function init() {
             Papa.parse(public_spreadsheet_url, {
                 download: true,
                 header: true,
+                skipEmptyLines: true,
                 complete: function(results) {
-                    const datos = results.data;
-                    procesarDatos(datos);
+                    procesarDatos(results.data);
                 }
             });
         }
 
         function procesarDatos(data) {
-            // Filtrar filas con datos mínimos
+            // 1. Limpiar datos y asegurar que existan los campos necesarios
             const cleanData = data.filter(row => row['Lección'] && row['Minutos']);
 
-            const etiquetas = cleanData.map(row => row['Lección'] + " (" + row['Tipo de prueba'] + ")");
+            const etiquetas = cleanData.map(row => `${row['Lección']} (${row['Tipo de prueba']})`);
             
             const valoresPPM = cleanData.map(row => {
-                // El QR envía "Ballena_Azul", buscamos ese ID en words.js
-                const idLeccion = row['Lección'].trim().replace(/ /g, "_");
-                const tipoActividad = row['Tipo de prueba'].trim(); // "Copiado", "Lectura" o "Dictado"
+                // Normalización de IDs (minúsculas y sin espacios)
+                const idLeccion = row['Lección'].trim().replace(/ /g, "_").toLowerCase();
+                const tipoActividad = row['Tipo de prueba'] ? row['Tipo de prueba'].trim() : "";
                 
-                // Obtenemos el conteo de palabras automático de GitHub
-                const palabras = (leccionesData[idLeccion] && leccionesData[idLeccion][tipoActividad]) 
-                                 ? leccionesData[idLeccion][tipoActividad] 
-                                 : 0;
+                // Intentar obtener el conteo del diccionario words.js
+                // Buscamos la llave en minúsculas para evitar fallos de matching
+                const leccionKey = Object.keys(leccionesData).find(k => k.toLowerCase() === idLeccion);
+                const conteos = leccionesData[leccionKey];
                 
+                const palabras = (conteos && conteos[tipoActividad]) ? conteos[tipoActividad] : 0;
+                
+                if (palabras === 0) console.warn(`No se encontraron palabras para: ${idLeccion} - ${tipoActividad}`);
+
                 const min = parseFloat(row['Minutos']) || 0;
                 const seg = parseFloat(row['Segundos']) || 0;
                 const tiempoTotal = min + (seg / 60);
 
-                return tiempoTotal > 0 ? (palabras / tiempoTotal).toFixed(2) : 0;
+                return tiempoTotal > 0 ? parseFloat((palabras / tiempoTotal).toFixed(2)) : 0;
             });
             
-            // Actualizar Tarjetas
-            document.getElementById('max-ppm').innerText = Math.max(...valoresPPM);
+            // 2. Actualizar tarjetas informativas
+            const maxVal = valoresPPM.length > 0 ? Math.max(...valoresPPM) : 0;
+            document.getElementById('max-ppm').innerText = maxVal;
             document.getElementById('total-lecciones').innerText = cleanData.length;
 
-            // Renderizar Gráfica
+            // 3. Renderizar Gráfica
             renderChart(etiquetas, valoresPPM);
         }
 
         function renderChart(labels, values) {
             const ctx = document.getElementById('progresoChart').getContext('2d');
-            new Chart(ctx, {
+            
+            // Destruir gráfico previo si existe para evitar superposiciones
+            if (window.myChart) window.myChart.destroy();
+
+            window.myChart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'Velocidad (Palabras por Minuto)',
+                        label: 'Palabras por Minuto (PPM)',
                         data: values,
                         borderColor: '#1a73e8',
                         backgroundColor: 'rgba(26, 115, 232, 0.1)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#1a73e8',
+                        pointRadius: 5,
                         fill: true,
-                        tension: 0.4
+                        tension: 0.3
                     }]
                 },
                 options: {
-                    scales: { y: { beginAtZero: true, title: { display: true, text: 'PPM' } } }
+                    responsive: true,
+                    scales: { 
+                        y: { 
+                            beginAtZero: true,
+                            title: { display: true, text: 'Velocidad (PPM)' }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: true, position: 'top' }
+                    }
                 }
             });
         }
-        
 
         window.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
-</html><div style='max-width:800px; margin:20px auto; font-family:sans-serif; padding:20px; border-top:1px dashed #ccc;'>
+</html>
+<div style='max-width:800px; margin:20px auto; font-family:sans-serif; padding:20px; border-top:1px dashed #ccc;'>
 <h3>📂 Descargar PDFs de Lecciones</h3><ul>
 <li><a href='./ballena_azul.pdf' target='_blank'>ballena_azul.pdf</a></li>
 </ul></div>
