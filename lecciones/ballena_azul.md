@@ -8,7 +8,7 @@ footer: "Ficha de Lectoescritura · Ballena Azul · Registro de Avance"
 style: |
   /* Doble de tamaño para Header y Footer */
   header, footer { 
-    font-size: 200%; 
+    font-size: 120%; 
     color: #546e7a;
   }
   header { border-bottom: 2px solid #cfd8dc; }
