@@ -6,9 +6,9 @@ paginate: true
 header: "🐳 Serie: Animales Maravillosos"
 footer: "Ficha de Lectoescritura · Ballena Azul · Registro de Avance"
 style: |
-  /* Cambiar tamaño para Header y Footer */
-  header, footer { 
-    font-size: 110%; 
+  /* Cambiar tamaño para Header */
+  header { 
+    font-size: 120%; 
     color: #546e7a;
   }
   header { border-bottom: 2px solid #cfd8dc; }
