@@ -1,20 +1,10 @@
 ---
 marp: true
 theme: default
+size: portrait
 paginate: false
 style: |
-  /* Forzamos que la sección se comporte como una hoja vertical */
-  section {
-    width: 794px; /* Ancho estándar A4 a 96dpi */
-    height: 1123px; /* Alto estándar A4 a 96dpi */
-    padding: 50px;
-    font-size: 24px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-  }
-  h1 { color: #1a73e8; border-bottom: 4px solid #1a73e8; margin-top: 0; }
-  h3 { color: #444; background: #f0f4f8; padding: 10px; border-radius: 5px; margin-top: 20px; }
+  /* @size portrait 720px 1280px */
   .hr-cut { border-top: 2px dashed #bbb; margin: 40px 0; width: 100%; }
   .qr-center { text-align: center; margin-top: auto; padding-bottom: 20px; }
 ---
