@@ -10,37 +10,68 @@
 
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; text-align: center; padding: 20px; }
-        .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .container { max-width: 1000px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         h1 { color: #1a73e8; margin-bottom: 30px; }
-        .stats-grid { display: flex; justify-content: space-around; margin-bottom: 30px; }
-        .stat-card { background: #e8f0fe; padding: 20px; border-radius: 12px; width: 45%; border: 1px solid #c2d7ff; }
-        .stat-label { font-size: 14px; color: #5f6368; text-transform: uppercase; letter-spacing: 1px; }
-        .stat-value { font-size: 32px; font-weight: bold; color: #1967d2; margin-top: 5px; }
-        canvas { background: #fff; border-radius: 8px; padding: 10px; }
+        
+        /* Grid de récords por tipo */
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: #e8f0fe; padding: 15px; border-radius: 12px; border: 1px solid #c2d7ff; }
+        .stat-label { font-size: 12px; color: #5f6368; text-transform: uppercase; font-weight: bold; }
+        .stat-value { font-size: 28px; font-weight: bold; color: #1967d2; margin: 5px 0; }
+        
+        /* Contenedores de gráficas */
+        .chart-container { margin-bottom: 50px; padding: 20px; border: 1px solid #eee; border-radius: 10px; }
+        h3 { color: #444; margin-bottom: 15px; border-bottom: 2px solid #1a73e8; display: inline-block; padding-bottom: 5px; }
+        canvas { background: #fff; max-height: 300px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🚀 ¡Progreso de Misión!</h1>
+        <h1>🚀 ¡Progreso por Categoría!</h1>
         
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-label">Mejor Récord</div>
-                <div id="max-ppm" class="stat-value">0</div>
+                <div class="stat-label">Récord Copiado</div>
+                <div id="max-copiado" class="stat-value">0</div>
                 <div class="stat-label">PPM</div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">Lecciones</div>
-                <div id="total-lecciones" class="stat-value">0</div>
-                <div class="stat-label">Completadas</div>
+                <div class="stat-label">Récord Lectura</div>
+                <div id="max-lectura" class="stat-value">0</div>
+                <div class="stat-label">PPM</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Récord Dictado</div>
+                <div id="max-dictado" class="stat-value">0</div>
+                <div class="stat-label">PPM</div>
             </div>
         </div>
 
-        <canvas id="progresoChart" width="400" height="200"></canvas>
+        <div class="chart-container">
+            <h3>📈 Evolución: Copiado</h3>
+            <canvas id="chartCopiado"></canvas>
+        </div>
+
+        <div class="chart-container">
+            <h3>📖 Evolución: Lectura</h3>
+            <canvas id="chartLectura"></canvas>
+        </div>
+
+        <div class="chart-container">
+            <h3>✍️ Evolución: Dictado</h3>
+            <canvas id="chartDictado"></canvas>
+        </div>
     </div>
 
     <script>
         const public_spreadsheet_url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSPbpiuL-TNp1FOm6n8BoeQcEKTyCMcvsugt1K2t2sUtaAnjY83A7ZuunEbRRyhp0GtiqqSHJQDLNNX/pub?gid=407824740&single=true&output=csv';
+
+        // Configuración de colores para cada tipo
+        const configTipos = {
+            'Copiado': { color: '#1a73e8', canvasId: 'chartCopiado', cardId: 'max-copiado' },
+            'Lectura': { color: '#34a853', canvasId: 'chartLectura', cardId: 'max-lectura' },
+            'Dictado': { color: '#f9ab00', canvasId: 'chartDictado', cardId: 'max-dictado' }
+        };
 
         function init() {
             Papa.parse(public_spreadsheet_url, {
@@ -54,73 +85,71 @@
         }
 
         function procesarDatos(data) {
-            // 1. Limpiar datos y asegurar que existan los campos necesarios
-            const cleanData = data.filter(row => row['Lección'] && row['Minutos']);
+            // Diccionario para agrupar resultados por tipo
+            const datasets = { 'Copiado': [], 'Lectura': [], 'Dictado': [] };
 
-            const etiquetas = cleanData.map(row => `${row['Lección']} (${row['Tipo de prueba']})`);
-            
-            const valoresPPM = cleanData.map(row => {
-                // Normalización de IDs (minúsculas y sin espacios)
+            data.forEach(row => {
+                const tipo = row['Tipo de prueba'] ? row['Tipo de prueba'].trim() : null;
+                if (!datasets[tipo]) return; // Ignorar si el tipo no es de los 3 principales
+
+                // Lógica de cálculo de PPM
                 const idLeccion = row['Lección'].trim().replace(/ /g, "_").toLowerCase();
-                const tipoActividad = row['Tipo de prueba'] ? row['Tipo de prueba'].trim() : "";
-                
-                // Intentar obtener el conteo del diccionario words.js
-                // Buscamos la llave en minúsculas para evitar fallos de matching
                 const leccionKey = Object.keys(leccionesData).find(k => k.toLowerCase() === idLeccion);
                 const conteos = leccionesData[leccionKey];
-                
-                const palabras = (conteos && conteos[tipoActividad]) ? conteos[tipoActividad] : 0;
-                
-                if (palabras === 0) console.warn(`No se encontraron palabras para: ${idLeccion} - ${tipoActividad}`);
+                const palabras = (conteos && conteos[tipo]) ? conteos[tipo] : 0;
 
                 const min = parseFloat(row['Minutos']) || 0;
                 const seg = parseFloat(row['Segundos']) || 0;
                 const tiempoTotal = min + (seg / 60);
+                const ppm = tiempoTotal > 0 ? parseFloat((palabras / tiempoTotal).toFixed(2)) : 0;
 
-                return tiempoTotal > 0 ? parseFloat((palabras / tiempoTotal).toFixed(2)) : 0;
+                datasets[tipo].push({
+                    leccion: row['Lección'],
+                    ppm: ppm
+                });
             });
-            
-            // 2. Actualizar tarjetas informativas
-            const maxVal = valoresPPM.length > 0 ? Math.max(...valoresPPM) : 0;
-            document.getElementById('max-ppm').innerText = maxVal;
-            document.getElementById('total-lecciones').innerText = cleanData.length;
 
-            // 3. Renderizar Gráfica
-            renderChart(etiquetas, valoresPPM);
+            // Procesar cada tipo para actualizar UI y Gráficas
+            Object.keys(configTipos).forEach(tipo => {
+                const info = configTipos[tipo];
+                const dataTipo = datasets[tipo];
+
+                const labels = dataTipo.map(d => d.leccion);
+                const values = dataTipo.map(d => d.ppm);
+
+                // Actualizar Récord Máximo en tarjeta
+                const maxVal = values.length > 0 ? Math.max(...values) : 0;
+                document.getElementById(info.cardId).innerText = maxVal;
+
+                // Renderizar su respectiva gráfica
+                renderChart(info.canvasId, tipo, labels, values, info.color);
+            });
         }
 
-        function renderChart(labels, values) {
-            const ctx = document.getElementById('progresoChart').getContext('2d');
-            
-            // Destruir gráfico previo si existe para evitar superposiciones
-            if (window.myChart) window.myChart.destroy();
-
-            window.myChart = new Chart(ctx, {
+        function renderChart(canvasId, label, labels, values, color) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'Palabras por Minuto (PPM)',
+                        label: `PPM - ${label}`,
                         data: values,
-                        borderColor: '#1a73e8',
-                        backgroundColor: 'rgba(26, 115, 232, 0.1)',
+                        borderColor: color,
+                        backgroundColor: color + '1A', // 10% opacidad
                         borderWidth: 3,
-                        pointBackgroundColor: '#1a73e8',
-                        pointRadius: 5,
+                        pointBackgroundColor: color,
+                        pointRadius: 4,
                         fill: true,
                         tension: 0.3
                     }]
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     scales: { 
-                        y: { 
-                            beginAtZero: true,
-                            title: { display: true, text: 'Velocidad (PPM)' }
-                        }
-                    },
-                    plugins: {
-                        legend: { display: true, position: 'top' }
+                        y: { beginAtZero: true, title: { display: true, text: 'Palabras por Minuto' } },
+                        x: { ticks: { maxRotation: 45, minRotation: 45 } }
                     }
                 }
             });
