@@ -5,6 +5,21 @@ size: 16:9
 paginate: true
 header: "🐳 Serie: Animales Maravillosos"
 footer: "Ficha de Lectoescritura · Ballena Azul · Registro de Avance"
+style: |
+  /* Doble de tamaño para Header y Footer */
+  header, footer { 
+    font-size: 200%; 
+    color: #546e7a;
+  }
+  header { border-bottom: 2px solid #cfd8dc; }
+  
+  /* Contenedor del QR a la derecha */
+  .qr-side {
+    float: right;
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.7em;
+  }
 ---
 
 # LA BALLENA AZUL
@@ -19,14 +34,16 @@ Este mamífero brillante no tiene dientes, sino **barbas** para filtrar su alime
 
 # 📋 GUÍA DEL TUTOR
 
+<div class="qr-side">
+
+<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https%3A%2F%2Fdocs.google.com%2Fforms%2Fd%2Fe%2F1FAIpQLSdZ2hUNKxJgGdhQHp_vAWxFBZDvCs3I_-nQPns64qez_79_Iw%2Fviewform%3Fusp%3Dpp_url%26entry.1913143287%3DBallena_Azul" width="150" height="150">
+
+**REGISTRAR PPM**
+</div>
+
 ### 3. DICTADO (15-20 PPM)
 > "Las crías de ballena son preciosas y crecen muy rápido. Debemos cuidar nuestro preciado océano con gratitud."
 
 ### 4. EVALUACIÓN
 1. ¿A qué se compara el peso de la lengua?
 2. ¿Qué efecto hace el agua bajo el sol?
-
-<div style="text-align: right;">
-<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https%3A%2F%2Fdocs.google.com%2Fforms%2Fd%2Fe%2F1FAIpQLSdZ2hUNKxJgGdhQHp_vAWxFBZDvCs3I_-nQPns64qez_79_Iw%2Fviewform%3Fusp%3Dpp_url%26entry.1913143287%3DBallena_Azul" width="110" height="110">
-<br><strong>REGISTRAR PPM</strong>
-</div>
